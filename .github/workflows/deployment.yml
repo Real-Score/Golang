@@ -43,14 +43,14 @@ jobs:
           python-version: "3.11"
       - run: make semgrep
 
-terrascan:
+  terrascan:
     runs-on: ubuntu-latest
     needs: install
     steps:
       - uses: actions/checkout@v4
       - run: make terrascan
 
-codeql:
+  codeql:
     runs-on: ubuntu-latest
     needs: install
     steps:
@@ -58,7 +58,7 @@ codeql:
       - uses: cli/cli-action@v2 # provides `gh` CLI
       - run: make codeql
 
-test:
+  test:
     runs-on: ubuntu-latest
     needs: [install, lint]
     steps:
