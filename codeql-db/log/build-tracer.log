@@ -1,0 +1,28 @@
+[T 13:01:52 25076] CodeQL CLI version 2.23.0
+[T 13:01:52 25076] Initializing tracer.
+[T 13:01:52 25076] Initializing tags.
+[T 13:01:52 25076] ID set to 00000000000061F4_0000000000000001 (parent root)
+[T 13:01:52 25076] Initializing tracer.
+[T 13:01:52 25076] Initializing tags.
+[T 13:01:52 25076] ID set to 00000000000061F4_0000000000000002 (parent root)
+[T 13:01:52 25076] ==== Candidate to intercept: /home/sayemah/Documents/Projects/Real-Score/Golang/codeql/codeql/go/tools/autobuild.sh (canonical: /home/sayemah/Documents/Projects/Real-Score/Golang/codeql/codeql/go/tools/autobuild.sh) ====
+[T 13:01:52 25076] Executing the following tracer actions:
+[T 13:01:52 25076] Tracer actions:
+[T 13:01:52 25076] pre_invocations(0)
+[T 13:01:52 25076] post_invocations(0)
+[T 13:01:52 25076] trace_languages(1): [go]
+[T 13:01:52 25076] Initializing tracer.
+[T 13:01:52 25076] Initializing tags.
+[T 13:01:52 25076] ID set to 00000000000061F4_0000000000000003 (parent 00000000000061F4_0000000000000002)
+[T 13:01:52 25080] Initializing tracer.
+[T 13:01:52 25080] Initializing tags.
+[T 13:01:52 25080] ID set to 00000000000061F8_0000000000000001 (parent 00000000000061F4_0000000000000003)
+[T 13:01:52 25080] ==== Candidate to intercept: /home/sayemah/Documents/Projects/Real-Score/Golang/codeql/codeql/go/tools/linux64/go-autobuilder (canonical: /home/sayemah/Documents/Projects/Real-Score/Golang/codeql/codeql/go/tools/linux64/go-autobuilder) ====
+[T 13:01:52 25080] Lua: === Intercepted call to /home/sayemah/Documents/Projects/Real-Score/Golang/codeql/codeql/go/tools/linux64/go-autobuilder ===
+[T 13:01:52 25080] Lua: Disabling tracing for language go.
+[T 13:01:52 25080] Executing the following tracer actions:
+[T 13:01:52 25080] Tracer actions:
+[T 13:01:52 25080] pre_invocations(0)
+[T 13:01:52 25080] post_invocations(0)
+[T 13:01:52 25080] trace_languages(0): []
+[T 13:01:52 25080] Disabling tracing for this command.

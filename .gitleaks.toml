@@ -1,0 +1,8 @@
+title = "Custom Gitleaks Config"
+
+[allowlist]
+  description = "Allow known non-secret examples in README"
+  regexes = [
+    '''(?i)BUNDLE_ENTERPRISE__CONTRIBSYS__COM''',
+    '''(?i)DB_PASSWORD'''
+  ]

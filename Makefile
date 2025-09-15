@@ -51,9 +51,9 @@ DOCKER_TAG := latest
 GOLANGCI_LINT_VERSION := v1.54.2
 GOLANGCI_LINT := $(shell go env GOPATH)/bin/golangci-lint
 CODEQL_VERSION := v2.23.0
-CODEQL_URL := https://github.com/github/codeql-cli-binaries/releases/download/$(CODEQL_VERSION)/codeql-linux64.zip
-CODEQL_DIR := $(CURDIR)/codeql
-CODEQL_BIN := $(CODEQL_DIR)/codeql
+CODEQL_DIR := /home/sayemah/Documents/Projects/Real-Score/Golang/codeql
+CODEQL := $(CODEQL_DIR)/codeql/codeql
+CODEQL_URL := https://github.com/github/codeql-cli-binaries/releases/download/v2.23.0/codeql-linux64.zip
 
 .PHONY: install lint gitleaks semgrep test terrascan codeql all
 
@@ -78,7 +78,7 @@ gitleaks:
 	sudo mv gitleaks /usr/local/bin/; \
 	rm -f gitleaks.tar.gz
 	@echo "Running Gitleaks scan..."
-	gitleaks detect --source . --verbose --redact
+	gitleaks detect --source . --verbose --redact --config .gitleaks.toml
 
 semgrep:
 	@echo "Installing Semgrep..."
@@ -103,21 +103,21 @@ terrascan:
 	terrascan scan -t helm -d ./helm || true; \
 	terrascan scan -t kustomize -d ./kustomize || true
 
-codeql: $(CODEQL_BIN)
+codeql: $(CODEQL)
 	@echo "Running CodeQL init..."
-	$(CODEQL_BIN) database create codeql-db --language=go --source-root=.
+	$(CODEQL) database create codeql-db --language=go --source-root=.
 
-$(CODEQL_BIN):
+$(CODEQL):
 	@echo "Installing CodeQL CLI..."
 	@rm -rf $(CODEQL_DIR)
 	@mkdir -p $(CODEQL_DIR)
-	curl -L -o codeql.zip $(CODEQL_URL)
-	curl -L -o codeql.zip.checksum $(CODEQL_URL).checksum.txt
-	sha256sum -c codeql.zip.checksum
-	unzip -q codeql.zip -d $(CODEQL_DIR)
-	rm -f codeql.zip codeql.zip.checksum
-	chmod +x $(CODEQL_DIR)/codeql
-	
+	curl -L -o codeql-linux64.zip $(CODEQL_URL)
+	curl -L -o codeql-linux64.zip.checksum.txt $(CODEQL_URL).checksum.txt
+	sha256sum -c codeql-linux64.zip.checksum.txt
+	unzip -q codeql-linux64.zip -d $(CODEQL_DIR)
+	rm -f codeql-linux64.zip codeql-linux64.zip.checksum.txt
+	chmod +x $(CODEQL)
+
 test:
 	@echo "Running Go tests..."
 	go test ./... -v
