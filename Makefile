@@ -4,6 +4,10 @@ DOCKER_TAG := latest
 GOLANGCI_LINT_VERSION := v1.54.2
 GOLANGCI_LINT := $(shell go env GOPATH)/bin/golangci-lint
 CODEQL_VERSION := v2.23.0
+CODEQL_DIR := $(PWD)/codeql
+CODEQL_BIN := $(CODEQL_DIR)/codeql
+CODEQL_DB := $(PWD)/codeql-db
+CODEQL_RESULTS := $(PWD)/codeql-results.sarif
 
 .PHONY: install lint gitleaks semgrep test terrascan codeql all
 
@@ -54,19 +58,25 @@ terrascan:
 	terrascan scan -t kustomize -d ./kustomize || true
 
 codeql:
-	@echo "Installing CodeQL CLI..."
-	curl -L -o codeql.zip https://github.com/github/codeql-cli-binaries/releases/download/$(CODEQL_VERSION)/codeql-linux64.zip
-	unzip -q codeql.zip
-	rm -f codeql.zip
-	@echo "Adding CodeQL to PATH..."
-	echo "$$PWD/codeql" >> $$GITHUB_PATH || true
-	@echo "Creating CodeQL database..."
-	./codeql/codeql database create codeql-db --language=go --source-root=.
+	@echo "Checking CodeQL installation..."
+	@if [ ! -x "$(CODEQL_BIN)" ]; then \
+		echo "Downloading CodeQL CLI $(CODEQL_VERSION)..."; \
+		curl -sSL -o codeql.zip https://github.com/github/codeql-cli-binaries/releases/download/$(CODEQL_VERSION)/codeql-linux64.zip; \
+		unzip -q codeql.zip; \
+		rm -f codeql.zip; \
+	fi
+	@echo "Ensuring Go query pack is available..."
+	$(CODEQL_BIN) pack download codeql/go-queries
+	@echo "Removing old database (if any)..."
+	rm -rf $(CODEQL_DB)
+	@echo "Creating new CodeQL database..."
+	$(CODEQL_BIN) database create $(CODEQL_DB) --language=go --source-root=.
 	@echo "Running CodeQL analysis..."
-	./codeql/codeql database analyze codeql-db \
+	$(CODEQL_BIN) database analyze $(CODEQL_DB) \
+		codeql/go-queries \
 		--format=sarifv2.1.0 \
-		--output=codeql-results.sarif
-	@echo "CodeQL analysis completed. Results saved to codeql-results.sarif"
+		--output=$(CODEQL_RESULTS)
+	@echo "CodeQL analysis completed. Results saved to $(CODEQL_RESULTS)"
 
 test:
 	@echo "Running Go tests..."
