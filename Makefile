@@ -4,7 +4,7 @@ DOCKER_TAG := latest
 GOLANGCI_LINT_VERSION := v1.54.2
 GOLANGCI_LINT := $(shell go env GOPATH)/bin/golangci-lint
 
-.PHONY: install lint gitleaks semgrep test terrascan all
+.PHONY: install lint gitleaks semgrep test terrascan codeql all
 
 install:
 	@echo "Tidying Go modules..."
@@ -52,8 +52,22 @@ terrascan:
 	terrascan scan -t helm -d ./helm || true; \
 	terrascan scan -t kustomize -d ./kustomize || true
 
+codeql:
+	@echo "Installing CodeQL CLI..."
+	curl -L -o codeql.zip https://github.com/github/codeql-cli-binaries/releases/download/v2.23.0/codeql-linux64.zip
+	unzip -q codeql.zip
+	sudo mv codeql /usr/local/bin/
+	rm -f codeql.zip
+	@echo "Creating CodeQL database..."
+	codeql database create codeql-db --language=go --source-root=.
+	@echo "Running CodeQL analysis..."
+	codeql database analyze codeql-db \
+		--format=sarifv2.1.0 \
+		--output=codeql-results.sarif
+	@echo "CodeQL analysis completed. Results saved to codeql-results.sarif"
+
 test:
 	@echo "Running Go tests..."
 	go test ./... -v
 
-all: install lint gitleaks semgrep terrascan test
+all: install lint gitleaks semgrep terrascan codeql test
