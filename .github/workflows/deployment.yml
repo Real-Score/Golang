@@ -52,17 +52,15 @@ jobs:
 
   codeql:
     runs-on: ubuntu-latest
-    needs: install
-    steps:
-      - uses: actions/checkout@v4
 
-      - name: Setup GitHub CLI
-        uses: actions/setup-gh@v4
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y unzip jq
+        run: sudo apt-get update && sudo apt-get install -y unzip curl
 
-      - name: Run CodeQL
+      - name: Run CodeQL via Makefile
         run: make codeql
 
   test:
