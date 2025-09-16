@@ -51,11 +51,41 @@ DOCKER_TAG := latest
 GOLANGCI_LINT_VERSION := v1.54.2
 GOLANGCI_LINT := $(shell go env GOPATH)/bin/golangci-lint
 CODEQL_VERSION := v2.23.0
-CODEQL_DIR := /home/sayemah/Documents/Projects/Real-Score/Golang/codeql
+CODEQL_DIR := $(CURDIR)/codeql
 CODEQL := $(CODEQL_DIR)/codeql/codeql
-CODEQL_URL := https://github.com/github/codeql-cli-binaries/releases/download/v2.23.0/codeql-linux64.zip
+CODEQL_URL := https://github.com/github/codeql-cli-binaries/releases/download/$(CODEQL_VERSION)/codeql-linux64.zip
+CODEQL_DB := $(CURDIR)/codeql-db
+CODEQL_REPORT := $(CURDIR)/codeql-report.sarif
 
-.PHONY: install lint gitleaks semgrep test terrascan codeql all
+.PHONY: install lint gitleaks semgrep test terrascan codeql codeql-init codeql-analyze all
+
+
+codeql: codeql-init codeql-analyze
+	@echo "CodeQL scan completed. Report: $(CODEQL_REPORT)"
+
+codeql-init: $(CODEQL)
+	@echo "Creating CodeQL database..."
+	@rm -rf $(CODEQL_DB)
+	$(CODEQL) database create $(CODEQL_DB) \
+		--language=go \
+		--source-root=$(CURDIR)
+
+codeql-analyze: $(CODEQL)
+	@echo "Analyzing CodeQL database..."
+	$(CODEQL) database analyze $(CODEQL_DB) \
+		--format=sarif-latest \
+		--output=$(CODEQL_REPORT)
+
+$(CODEQL):
+	@echo "Installing CodeQL CLI..."
+	@rm -rf $(CODEQL_DIR)
+	@mkdir -p $(CODEQL_DIR)
+	curl -L -o codeql-linux64.zip $(CODEQL_URL)
+	curl -L -o codeql-linux64.zip.checksum.txt $(CODEQL_URL).checksum.txt
+	sha256sum -c codeql-linux64.zip.checksum.txt
+	unzip -q codeql-linux64.zip -d $(CODEQL_DIR)
+	rm -f codeql-linux64.zip codeql-linux64.zip.checksum.txt
+	chmod +x $(CODEQL)
 
 install:
 	@echo "Tidying Go modules..."
@@ -102,21 +132,6 @@ terrascan:
 	terrascan scan -t k8s -d ./k8s || true; \
 	terrascan scan -t helm -d ./helm || true; \
 	terrascan scan -t kustomize -d ./kustomize || true
-
-codeql: $(CODEQL)
-	@echo "Running CodeQL init..."
-	$(CODEQL) database create codeql-db --language=go --source-root=.
-
-$(CODEQL):
-	@echo "Installing CodeQL CLI..."
-	@rm -rf $(CODEQL_DIR)
-	@mkdir -p $(CODEQL_DIR)
-	curl -L -o codeql-linux64.zip $(CODEQL_URL)
-	curl -L -o codeql-linux64.zip.checksum.txt $(CODEQL_URL).checksum.txt
-	sha256sum -c codeql-linux64.zip.checksum.txt
-	unzip -q codeql-linux64.zip -d $(CODEQL_DIR)
-	rm -f codeql-linux64.zip codeql-linux64.zip.checksum.txt
-	chmod +x $(CODEQL)
 
 test:
 	@echo "Running Go tests..."
