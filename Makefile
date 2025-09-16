@@ -56,8 +56,8 @@ codeql:
 	@echo "Installing CodeQL CLI..."
 	curl -L -o codeql.zip https://github.com/github/codeql-cli-binaries/releases/download/v2.23.0/codeql-linux64.zip
 	unzip -q codeql.zip
-	sudo mv codeql /usr/local/bin/
-	rm -f codeql.zip
+	sudo mv codeql/codeql /usr/local/bin/
+	rm -rf codeql.zip codeql
 	@echo "Creating CodeQL database..."
 	codeql database create codeql-db --language=go --source-root=.
 	@echo "Running CodeQL analysis..."
