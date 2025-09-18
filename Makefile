@@ -8,10 +8,9 @@ CODEQL_DIR := $(PWD)/codeql
 CODEQL_BIN := $(CODEQL_DIR)/codeql
 CODEQL_DB := $(PWD)/codeql-db
 CODEQL_RESULTS := $(PWD)/codeql-results.sarif
-CONFTEST_VERSION := latest
+CONFTEST_VERSION := 0.41.0   # specify a stable version
 POLICY_DIR := policies
-MANIFEST_DIR := k8s-manifests  # change this to your manifest directory
-
+MANIFEST_DIR := k8s-manifests
 
 .PHONY: install lint gitleaks semgrep test terrascan codeql synk conftest all
 
@@ -91,9 +90,11 @@ synk:
 
 conftest:
 	@echo "Installing Conftest CLI..."
-	curl -sSL -o conftest https://github.com/open-policy-agent/conftest/releases/$(CONFTEST_VERSION)/download/conftest_$(shell uname | tr '[:upper:]' '[:lower:]')_amd64
+	curl -sSL https://github.com/open-policy-agent/conftest/releases/download/v$(CONFTEST_VERSION)/conftest_$(CONFTEST_VERSION)_$(shell uname | tr '[:upper:]' '[:lower:]')_amd64.tar.gz -o conftest.tar.gz
+	tar -xzf conftest.tar.gz
 	chmod +x conftest
 	sudo mv conftest /usr/local/bin/conftest || true
+	rm -f conftest.tar.gz
 	@echo "Running Conftest security checks..."
 	conftest test $(MANIFEST_DIR) -p $(POLICY_DIR)
 

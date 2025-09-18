@@ -70,12 +70,12 @@ jobs:
 
   conftest:
     runs-on: ubuntu-latest
-    needs: install
+    needs: install  # run after the install job
     steps:
       - uses: actions/checkout@v4
       - name: Run Conftest security check
         run: make conftest
-  
+
   test:
     runs-on: ubuntu-latest
     needs: [install, lint]
