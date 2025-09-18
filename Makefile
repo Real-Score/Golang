@@ -90,14 +90,14 @@ synk:
 
 conftest:
 	@echo "Installing Conftest CLI..."
-	curl -sSL -o conftest.tar.gz https://github.com/open-policy-agent/conftest/releases/download/v$(CONFTEST_VERSION)/conftest_$(CONFTEST_VERSION)_linux_amd64.tar.gz
+	curl -sSL -o conftest.tar.gz https://github.com/open-policy-agent/conftest/releases/download/v0.41.0/conftest_0.41.0_linux_amd64.tar.gz
 	tar -xzf conftest.tar.gz
 	chmod +x conftest
 	sudo mv conftest /usr/local/bin/conftest || true
 	rm -f conftest.tar.gz
 	@echo "Running Conftest security checks..."
 	conftest test $(MANIFEST_DIR) -p $(POLICY_DIR)
-	
+
 test:
 	@echo "Running Go tests..."
 	go test ./... -v
