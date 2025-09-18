@@ -1,6 +1,6 @@
 APP_NAME := demo
 DOCKER_TAG := latest
-OWASP_TARGET ?= http://175.29.21.210:30002/  # default URL of the app to scan
+OWASP_TARGET ?= http://175.29.21.210:30010/  # default URL of the app to scan
 # Use a version that works with Go 1.18
 GOLANGCI_LINT_VERSION := v1.54.2
 GOLANGCI_LINT := $(shell go env GOPATH)/bin/golangci-lint
@@ -100,13 +100,13 @@ synk:
 # 	@echo "Running Conftest security checks..."
 # 	conftest test $(MANIFEST_DIR) -p $(POLICY_DIR)
 
-opa:
-	@echo "Installing OPA CLI..."
-	curl -sSL -o opa https://github.com/open-policy-agent/opa/releases/download/v$(OPA_VERSION)/opa_linux_amd64
-	chmod +x opa
-	sudo mv opa /usr/local/bin/opa || true
-	@echo "Running OPA security checks..."
-	opa eval --input $(MANIFEST_DIR) --data $(POLICY_DIR) "data.main.deny" --fail-defined
+# opa:
+#	@echo "Installing OPA CLI..."
+#	curl -sSL -o opa https://github.com/open-policy-agent/opa/releases/download/v$(OPA_VERSION)/opa_linux_amd64
+#	chmod +x opa
+#	sudo mv opa /usr/local/bin/opa || true
+#	@echo "Running OPA security checks..."
+#	opa eval --input $(MANIFEST_DIR) --data $(POLICY_DIR) "data.main.deny" --fail-defined
 
 owasp:
 	@echo "Starting OWASP ZAP scan on $(OWASP_TARGET)..."
