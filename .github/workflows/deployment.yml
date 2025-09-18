@@ -67,9 +67,6 @@ jobs:
       - uses: actions/checkout@v4
       - name: Run Snyk scan
         run: make synk
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-
   
   test:
     runs-on: ubuntu-latest
