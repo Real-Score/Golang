@@ -8,9 +8,12 @@ CODEQL_DIR := $(PWD)/codeql
 CODEQL_BIN := $(CODEQL_DIR)/codeql
 CODEQL_DB := $(PWD)/codeql-db
 CODEQL_RESULTS := $(PWD)/codeql-results.sarif
-SYNK_VERSION := v1.1291.0   # pick a stable version
+CONFTEST_VERSION := latest
+POLICY_DIR := policies
+MANIFEST_DIR := k8s-manifests  # change this to your manifest directory
 
-.PHONY: install lint gitleaks semgrep test terrascan codeql synk all
+
+.PHONY: install lint gitleaks semgrep test terrascan codeql synk conftest all
 
 install:
 	@echo "Tidying Go modules..."
@@ -86,8 +89,16 @@ synk:
 	@echo "Running Snyk scan..."
 	SNYK_TOKEN="3b94176d-d733-448a-8c30-ef3c88a64299" ./snyk test --all-projects --severity-threshold=medium
 
+conftest:
+	@echo "Installing Conftest CLI..."
+	curl -sSL -o conftest https://github.com/open-policy-agent/conftest/releases/$(CONFTEST_VERSION)/download/conftest_$(shell uname | tr '[:upper:]' '[:lower:]')_amd64
+	chmod +x conftest
+	sudo mv conftest /usr/local/bin/conftest || true
+	@echo "Running Conftest security checks..."
+	conftest test $(MANIFEST_DIR) -p $(POLICY_DIR)
+
 test:
 	@echo "Running Go tests..."
 	go test ./... -v
 
-all: install lint gitleaks semgrep terrascan codeql synk test
+all: install lint gitleaks semgrep terrascan codeql synk conftest test
