@@ -1,6 +1,6 @@
 APP_NAME := demo
 DOCKER_TAG := latest
-OWASP_TARGET ?= http://localhost:8080  # default URL of the app to scan
+OWASP_TARGET ?= http://175.29.21.210:30002/  # default URL of the app to scan
 # Use a version that works with Go 1.18
 GOLANGCI_LINT_VERSION := v1.54.2
 GOLANGCI_LINT := $(shell go env GOPATH)/bin/golangci-lint
