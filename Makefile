@@ -101,7 +101,7 @@ synk:
 
 opa:
 	@echo "Installing OPA CLI..."
-	curl -sSL -o opa https://openpolicyagent.org/downloads/v$(OPA_VERSION)/opa_linux_amd64
+	curl -sSL -o opa https://github.com/open-policy-agent/opa/releases/download/v$(OPA_VERSION)/opa_linux_amd64
 	chmod +x opa
 	sudo mv opa /usr/local/bin/opa || true
 	@echo "Running OPA security checks..."
