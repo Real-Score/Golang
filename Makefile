@@ -97,7 +97,7 @@ conftest:
 	rm -f conftest.tar.gz
 	@echo "Running Conftest security checks..."
 	conftest test $(MANIFEST_DIR) -p $(POLICY_DIR)
-
+	
 test:
 	@echo "Running Go tests..."
 	go test ./... -v
