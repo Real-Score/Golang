@@ -9,7 +9,7 @@ CODEQL_BIN := $(CODEQL_DIR)/codeql
 CODEQL_DB := $(PWD)/codeql-db
 CODEQL_RESULTS := $(PWD)/codeql-results.sarif
 
-.PHONY: install lint gitleaks semgrep test terrascan codeql all
+.PHONY: install lint gitleaks semgrep test terrascan codeql synk all
 
 install:
 	@echo "Tidying Go modules..."
@@ -78,8 +78,14 @@ codeql:
 		--output=$(CODEQL_RESULTS)
 	@echo "CodeQL analysis completed. Results saved to $(CODEQL_RESULTS)"
 
+snyk:
+	@echo "Installing Snyk CLI..."
+	curl -sL https://snyk.io/install.sh | sh
+	@echo "Running Snyk scan..."
+	SNYK_TOKEN=$$SNYK_TOKEN snyk test --all-projects --severity-threshold=medium
+
 test:
 	@echo "Running Go tests..."
 	go test ./... -v
 
-all: install lint gitleaks semgrep terrascan codeql test
+all: install lint gitleaks semgrep terrascan codeql synk test
