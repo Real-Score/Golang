@@ -90,7 +90,7 @@ synk:
 
 conftest:
 	@echo "Installing Conftest CLI..."
-	curl -sSL https://github.com/open-policy-agent/conftest/releases/download/v$(CONFTEST_VERSION)/conftest_$(CONFTEST_VERSION)_$(shell uname | tr '[:upper:]' '[:lower:]')_amd64.tar.gz -o conftest.tar.gz
+	curl -sSL -o conftest.tar.gz https://github.com/open-policy-agent/conftest/releases/download/v$(CONFTEST_VERSION)/conftest_$(CONFTEST_VERSION)_linux_amd64.tar.gz
 	tar -xzf conftest.tar.gz
 	chmod +x conftest
 	sudo mv conftest /usr/local/bin/conftest || true
