@@ -110,10 +110,9 @@ opa:
 
 owasp:
 	@echo "Starting OWASP ZAP scan on $(OWASP_TARGET)..."
-	# Example: Run ZAP in Docker against your app
-	docker run --rm -v $(PWD):/zap/wrk/:rw -t owasp/zap2docker-stable zap-baseline.py -t $(OWASP_TARGET) -r zap-report.html
+	docker run --rm -v $(PWD):/zap/wrk/:rw zaproxy/zap-stable zap-baseline.py -t $(OWASP_TARGET) -r zap-report.html
 	@echo "OWASP ZAP scan completed. Report saved to zap-report.html"
-
+	
 test:
 	@echo "Running Go tests..."
 	go test ./... -v
