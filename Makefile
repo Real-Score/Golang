@@ -1,5 +1,6 @@
 APP_NAME := demo
 DOCKER_TAG := latest
+OWASP_TARGET ?= http://localhost:8080  # default URL of the app to scan
 # Use a version that works with Go 1.18
 GOLANGCI_LINT_VERSION := v1.54.2
 GOLANGCI_LINT := $(shell go env GOPATH)/bin/golangci-lint
@@ -8,12 +9,12 @@ CODEQL_DIR := $(PWD)/codeql
 CODEQL_BIN := $(CODEQL_DIR)/codeql
 CODEQL_DB := $(PWD)/codeql-db
 CODEQL_RESULTS := $(PWD)/codeql-results.sarif
-CONFTEST_VERSION := 0.41.0   # specify a stable version
+# CONFTEST_VERSION := 0.41.0   # specify a stable version
 OPA_VERSION := 0.80.0
 POLICY_DIR := policies
 MANIFEST_DIR := k8s-manifests
 
-.PHONY: install lint gitleaks semgrep test terrascan codeql synk conftest all
+.PHONY: install lint gitleaks semgrep test terrascan codeql synk conftest owasp all
 
 install:
 	@echo "Tidying Go modules..."
@@ -107,8 +108,14 @@ opa:
 	@echo "Running OPA security checks..."
 	opa eval --input $(MANIFEST_DIR) --data $(POLICY_DIR) "data.main.deny" --fail-defined
 
+owasp:
+	@echo "Starting OWASP ZAP scan on $(OWASP_TARGET)..."
+	# Example: Run ZAP in Docker against your app
+	docker run --rm -v $(PWD):/zap/wrk/:rw -t owasp/zap2docker-stable zap-baseline.py -t $(OWASP_TARGET) -r zap-report.html
+	@echo "OWASP ZAP scan completed. Report saved to zap-report.html"
+
 test:
 	@echo "Running Go tests..."
 	go test ./... -v
 
-all: install lint gitleaks semgrep terrascan codeql synk conftest test
+all: install lint gitleaks semgrep terrascan codeql synk conftest owasp test
