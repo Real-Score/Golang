@@ -65,10 +65,6 @@ jobs:
     needs: install
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Node.js (needed for npm projects in snyk)
-        uses: actions/setup-node@v4
-        with:
-          node-version: "18"
       - name: Run Snyk scan
         run: make snyk
         env:

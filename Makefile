@@ -8,6 +8,7 @@ CODEQL_DIR := $(PWD)/codeql
 CODEQL_BIN := $(CODEQL_DIR)/codeql
 CODEQL_DB := $(PWD)/codeql-db
 CODEQL_RESULTS := $(PWD)/codeql-results.sarif
+SYNK_VERSION := v1.1291.0   # pick a stable version
 
 .PHONY: install lint gitleaks semgrep test terrascan codeql synk all
 
@@ -78,9 +79,10 @@ codeql:
 		--output=$(CODEQL_RESULTS)
 	@echo "CodeQL analysis completed. Results saved to $(CODEQL_RESULTS)"
 
-snyk:
-	@echo "Installing Snyk CLI..."
-	bash -c "curl -sL https://snyk.io/install.sh | sh"
+synk:
+	@echo "Installing Snyk CLI $(SYNK_VERSION)..."
+	curl -sSL https://github.com/snyk/cli/releases/download/$(SNYK_VERSION)/snyk-linux \
+		-o snyk && chmod +x snyk
 	@echo "Running Snyk scan..."
 	SNYK_TOKEN=$$SNYK_TOKEN ./snyk test --all-projects --severity-threshold=medium
 
