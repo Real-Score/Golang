@@ -69,6 +69,7 @@ jobs:
         run: make synk
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
   
   test:
     runs-on: ubuntu-latest
