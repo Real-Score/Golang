@@ -84,7 +84,7 @@ synk:
 	curl -sL https://static.snyk.io/cli/latest/snyk-linux -o snyk
 	chmod +x snyk
 	@echo "Running Snyk scan..."
-	SNYK_TOKEN=$$SNYK_TOKEN ./snyk test --all-projects --severity-threshold=medium
+	SSNYK_TOKEN=$$SNYK_TOKEN ./snyk test --all-projects --severity-threshold=medium
 
 test:
 	@echo "Running Go tests..."
