@@ -9,6 +9,7 @@ CODEQL_BIN := $(CODEQL_DIR)/codeql
 CODEQL_DB := $(PWD)/codeql-db
 CODEQL_RESULTS := $(PWD)/codeql-results.sarif
 CONFTEST_VERSION := 0.41.0   # specify a stable version
+OPA_VERSION := 0.80.0
 POLICY_DIR := policies
 MANIFEST_DIR := k8s-manifests
 
@@ -88,15 +89,23 @@ synk:
 	@echo "Running Snyk scan..."
 	SNYK_TOKEN="3b94176d-d733-448a-8c30-ef3c88a64299" ./snyk test --all-projects --severity-threshold=medium
 
-conftest:
-	@echo "Installing Conftest CLI..."
-	curl -sSL -o conftest.tar.gz https://github.com/open-policy-agent/conftest/releases/download/v0.41.0/conftest_0.41.0_linux_amd64.tar.gz
-	tar -xzf conftest.tar.gz
-	chmod +x conftest
-	sudo mv conftest /usr/local/bin/conftest || true
-	rm -f conftest.tar.gz
-	@echo "Running Conftest security checks..."
-	conftest test $(MANIFEST_DIR) -p $(POLICY_DIR)
+# conftest:
+# 	@echo "Installing Conftest CLI..."
+# 	curl -sSL -o conftest.tar.gz https://github.com/open-policy-agent/conftest/releases/download/v0.41.0/conftest_0.41.0_linux_amd64.tar.gz
+# 	tar -xzf conftest.tar.gz
+# 	chmod +x conftest
+# 	sudo mv conftest /usr/local/bin/conftest || true
+# 	rm -f conftest.tar.gz
+# 	@echo "Running Conftest security checks..."
+# 	conftest test $(MANIFEST_DIR) -p $(POLICY_DIR)
+
+opa:
+	@echo "Installing OPA CLI..."
+	curl -sSL -o opa https://openpolicyagent.org/downloads/v$(OPA_VERSION)/opa_linux_amd64
+	chmod +x opa
+	sudo mv opa /usr/local/bin/opa || true
+	@echo "Running OPA security checks..."
+	opa eval --input $(MANIFEST_DIR) --data $(POLICY_DIR) "data.main.deny" --fail-defined
 
 test:
 	@echo "Running Go tests..."
