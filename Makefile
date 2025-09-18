@@ -80,9 +80,9 @@ codeql:
 
 snyk:
 	@echo "Installing Snyk CLI..."
-	curl -sL https://snyk.io/install.sh | sh
+	bash -c "curl -sL https://snyk.io/install.sh | sh"
 	@echo "Running Snyk scan..."
-	SNYK_TOKEN=$$SNYK_TOKEN snyk test --all-projects --severity-threshold=medium
+	SNYK_TOKEN=$$SNYK_TOKEN ./snyk test --all-projects --severity-threshold=medium
 
 test:
 	@echo "Running Go tests..."
