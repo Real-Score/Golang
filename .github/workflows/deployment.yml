@@ -60,13 +60,13 @@ jobs:
           go-version: "1.22"
       - run: make codeql
 
-  snyk:
+  synk:
     runs-on: ubuntu-latest
     needs: install
     steps:
       - uses: actions/checkout@v4
-      - name: Run Snyk scan
-        run: make snyk
+      - name: Run Synk scan
+        run: make synk
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
