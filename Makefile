@@ -80,9 +80,9 @@ codeql:
 	@echo "CodeQL analysis completed. Results saved to $(CODEQL_RESULTS)"
 
 synk:
-	@echo "Installing Snyk CLI $(SYNK_VERSION)..."
-	curl -sSL https://github.com/snyk/cli/releases/download/$(SNYK_VERSION)/snyk-linux \
-		-o snyk && chmod +x snyk
+	@echo "Installing latest Snyk CLI..."
+	curl -sL https://static.snyk.io/cli/latest/snyk-linux -o snyk
+	chmod +x snyk
 	@echo "Running Snyk scan..."
 	SNYK_TOKEN=$$SNYK_TOKEN ./snyk test --all-projects --severity-threshold=medium
 
