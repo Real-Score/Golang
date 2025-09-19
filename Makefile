@@ -15,7 +15,7 @@ POLICY_DIR := policies
 MANIFEST_DIR := k8s-manifests
 MSF_TARGET ?= 175.29.21.210
 
-.PHONY: install lint gitleaks semgrep test terrascan codeql synk conftest owasp metasploit all
+.PHONY: install lint gitleaks semgrep test terrascan codeql synk conftest owasp metasploit whitesource all
 
 install:
 	@echo "Tidying Go modules..."
@@ -139,8 +139,15 @@ metasploit:
 	@echo "exit" >> scan.rc
 	msfconsole -r scan.rc
 
+whitesource:
+	@echo "Running WhiteSource (Mend) scan for license compliance..."
+	@if [ ! -f wss-unified-agent.jar ]; then \
+		curl -L -o wss-unified-agent.jar https://github.com/whitesource/unified-agent-distribution/releases/latest/download/wss-unified-agent.jar; \
+	fi
+	java -jar wss-unified-agent.jar -c wss-unified-agent.config
+
 test:
 	@echo "Running Go tests..."
 	go test ./... -v
 
-all: install lint gitleaks semgrep terrascan codeql synk conftest owasp metasploit test
+all: install lint gitleaks semgrep terrascan codeql synk conftest owasp metasploit whitesource test
