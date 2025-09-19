@@ -15,7 +15,7 @@ POLICY_DIR := policies
 MANIFEST_DIR := k8s-manifests
 MSF_TARGET ?= 175.29.21.210
 
-.PHONY: install lint gitleaks semgrep test terrascan codeql synk conftest owasp metasploit whitesource all
+.PHONY: install lint gitleaks semgrep test terrascan codeql synk conftest owasp metasploit whitesource datameer-mask all
 
 install:
 	@echo "Tidying Go modules..."
@@ -146,8 +146,40 @@ whitesource:
 	fi
 	java -jar wss-unified-agent.jar -c wss-unified-agent.config
 
+# datameer-mask target — uses dummy envs if not provided
+datameer-mask:
+	@echo "Running Datameer masking (test mode with dummy envs)..."
+
+	@DATAMEER_API_TOKEN="$${DATAMEER_API_TOKEN:-dmr_test_ABC123xyz_TOKEN_000}" ; \
+	DATAMEER_BASE_URL="$${DATAMEER_BASE_URL:-https://demo.datameer.example.com/api}" ; \
+	DATAMEER_JOB_ID="$${DATAMEER_JOB_ID:-JOB-000-TEST-1234}" ; \
+	INPUT="$${DATAMEER_INPUT_TABLE:-raw_data_test.csv}" ; \
+	OUTPUT="$${DATAMEER_OUTPUT_TABLE:-masked_data_test.csv}" ; \
+	\
+	echo "Using Datameer API URL: $$DATAMEER_BASE_URL" ; \
+	echo "Using job id: $$DATAMEER_JOB_ID" ; \
+	echo "Input file: $$INPUT" ; \
+	echo "Output file: $$OUTPUT" ; \
+	\
+	echo "POST $$DATAMEER_BASE_URL/jobs/$$DATAMEER_JOB_ID/execute (simulated)" ; \
+	printf '{ "jobId":"%s", "input":"%s", "output":"%s" }' "$$DATAMEER_JOB_ID" "$$INPUT" "$$OUTPUT" > datameer_trigger_payload.json ; \
+	cat datameer_trigger_payload.json ; \
+	\
+	echo '{"status":"SUBMITTED","runId":"run-000-test","startTime":"2025-09-19T16:00:00Z"}' > datameer_response.json ; \
+	cat datameer_response.json ; \
+	\
+	echo "Polling for job completion (simulated)..." ; \
+	sleep 1 ; \
+	echo '{"runId":"run-000-test","status":"COMPLETED","rowsProcessed":1000}' > datameer_run_status.json ; \
+	cat datameer_run_status.json ; \
+	\
+	echo "Simulating download of masked output to $$OUTPUT" ; \
+	printf "id,name,email\n1,XXX,masked1@masked.com\n2,YYY,masked2@masked.com\n" > "$$OUTPUT" ; \
+	ls -lh "$$OUTPUT" ; \
+	echo "Datameer masking simulation complete. Output: $$OUTPUT"
+
 test:
 	@echo "Running Go tests..."
 	go test ./... -v
 
-all: install lint gitleaks semgrep terrascan codeql synk conftest owasp metasploit whitesource test
+all: install lint gitleaks semgrep terrascan codeql synk conftest owasp metasploit whitesource datameer-mask test

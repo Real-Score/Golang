@@ -111,6 +111,33 @@ jobs:
       - name: Run whitesource
         run: make whitesource 
 
+  datameer-mask:
+    runs-on: ubuntu-latest
+    env:
+      DATAMEER_API_TOKEN: dmr_test_ABC123xyz_TOKEN_000
+      DATAMEER_BASE_URL: https://demo.datameer.example.com/api
+      DATAMEER_JOB_ID: JOB-000-TEST-1234
+      DATAMEER_INPUT_TABLE: raw_data_test.csv
+      DATAMEER_OUTPUT_TABLE: masked_data_test.csv
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Show envs (test-only)
+        run: |
+          echo "DATAMEER_BASE_URL=$$DATAMEER_BASE_URL"
+          echo "DATAMEER_JOB_ID=$$DATAMEER_JOB_ID"
+
+      - name: Run Datameer masking (simulate)
+        run: make datameer-mask
+
+      - name: Upload masked sample
+        uses: actions/upload-artifact@v4
+        with:
+          name: datameer-masked-sample
+          path: masked_data_test.csv
+
   test:
     runs-on: ubuntu-latest
     needs: [install, lint]
