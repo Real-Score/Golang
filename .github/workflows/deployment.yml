@@ -68,6 +68,20 @@ jobs:
       - name: Run Snyk scan
         run: make synk
 
+  metasploit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # - name: Install dependencies
+      #   run: |
+      #     sudo apt-get update
+      #     sudo apt-get install -y make metasploit-framework
+
+      - name: Run Metasploit Scan
+        run: make metasploit MSF_TARGET=175.29.21.210
+
   # conftest:
   #   runs-on: ubuntu-latest
   #   needs: install  # run after the install job
