@@ -74,10 +74,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # - name: Install dependencies
-      #   run: |
-      #     sudo apt-get update
-      #     sudo apt-get install -y make metasploit-framework
+      - name: Install Metasploit
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y curl gnupg
+          curl https://raw.githubusercontent.com/rapid7/metasploit-framework/master/msfinstall > msfinstall
+          chmod 755 msfinstall
+          sudo ./msfinstall
+          which msfconsole
+          msfconsole --version
 
       - name: Run Metasploit Scan
         run: make metasploit MSF_TARGET=175.29.21.210
