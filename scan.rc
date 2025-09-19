@@ -1,0 +1,8 @@
+use auxiliary/scanner/portscan/tcp
+set RHOSTS 175.29.21.210
+set PORTS 1-1000
+run
+use auxiliary/scanner/http/http_version
+set RHOSTS 175.29.21.210
+run
+exit

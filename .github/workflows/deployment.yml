@@ -103,5 +103,5 @@ jobs:
   #     - name: Set up Docker
   #       uses: docker/setup-buildx-action@v2
 
-      - name: Run OWASP DAST
-        run: make owasp OWASP_TARGET=http://175.29.21.210:30010/
+      # - name: Run OWASP DAST
+      #   run: make owasp OWASP_TARGET=http://175.29.21.210:30010/

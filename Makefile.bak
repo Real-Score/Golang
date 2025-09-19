@@ -21,7 +21,7 @@ install:
 	@echo "Tidying Go modules..."
 	go mod tidy
 	sudo apt update
-	sudo apt install -y metasploit-framework
+    sudo apt install -y metasploit-framework
 
 lint:
 	@echo "Running golangci-lint..."
