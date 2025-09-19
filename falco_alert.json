@@ -1,0 +1,1 @@
+{"priority":"CRITICAL","rule":"Terminal shell in container","output":"Detected shell spawn in container"}

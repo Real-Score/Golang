@@ -15,7 +15,7 @@ POLICY_DIR := policies
 MANIFEST_DIR := k8s-manifests
 MSF_TARGET ?= 175.29.21.210
 
-.PHONY: install lint gitleaks semgrep test terrascan codeql synk conftest owasp metasploit whitesource datameer-mask all
+.PHONY: install lint gitleaks semgrep test terrascan codeql synk conftest owasp metasploit whitesource datameer-mask falco-monitor all
 
 install:
 	@echo "Tidying Go modules..."
@@ -178,8 +178,35 @@ datameer-mask:
 	ls -lh "$$OUTPUT" ; \
 	echo "Datameer masking simulation complete. Output: $$OUTPUT"
 
+falco-monitor:
+	@echo "Running Falco (simulation mode for CI/CD)..."
+	@echo "Using ruleset: default"
+	# simulate Falco alerts
+	echo '{"priority":"CRITICAL","rule":"Terminal shell in container","output":"Detected shell spawn in container"}' > falco_alert.json
+	cat falco_alert.json
+	@echo "Falco monitoring simulation complete."
+
+jobs:
+  falco:
+    name: Run Falco Security Monitor
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Falco Monitoring (Makefile target)
+        run: make falco-monitor
+
+      - name: Upload Falco Alerts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: falco-alerts
+          path: falco_alert.json
+		  
 test:
 	@echo "Running Go tests..."
 	go test ./... -v
 
-all: install lint gitleaks semgrep terrascan codeql synk conftest owasp metasploit whitesource datameer-mask test
+all: install lint gitleaks semgrep terrascan codeql synk conftest owasp metasploit whitesource datameer-mask falco-monitor test
