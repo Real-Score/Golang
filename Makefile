@@ -19,9 +19,20 @@ MSF_TARGET ?= 175.29.21.210
 
 install:
 	@echo "Tidying Go modules..."
-	go mod tidy
-	sudo apt update
-	sudo apt install -y metasploit-framework
+	@go mod tidy
+	@echo "Updating apt caches..."
+	@sudo apt update
+	# If msfconsole already exists, skip install
+	@if command -v msfconsole >/dev/null 2>&1; then \
+	  echo "msfconsole already installed, skipping metasploit install"; \
+	else \
+	  echo "msfconsole not found. Installing snapd (if needed) and metasploit-framework snap..."; \
+	  if ! command -v snap >/dev/null 2>&1; then \
+	    echo "snap not found — installing snapd..."; \
+	    sudo apt install -y snapd; \
+	  fi; \
+	  sudo snap install metasploit-framework --classic; \
+	fi
 
 lint:
 	@echo "Running golangci-lint..."
