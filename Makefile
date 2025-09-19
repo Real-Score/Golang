@@ -186,25 +186,6 @@ falco-monitor:
 	cat falco_alert.json
 	@echo "Falco monitoring simulation complete."
 
-jobs:
-  falco:
-    name: Run Falco Security Monitor
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Run Falco Monitoring (Makefile target)
-        run: make falco-monitor
-
-      - name: Upload Falco Alerts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: falco-alerts
-          path: falco_alert.json
-		  
 test:
 	@echo "Running Go tests..."
 	go test ./... -v
