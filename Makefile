@@ -15,7 +15,7 @@ POLICY_DIR := policies
 MANIFEST_DIR := k8s-manifests
 MSF_TARGET ?= 175.29.21.210
 
-.PHONY: install lint gitleaks semgrep test terrascan codeql synk conftest owasp metasploit whitesource datameer-mask falco-monitor all
+.PHONY: install lint gitleaks semgrep test terrascan codeql snyk conftest owasp metasploit whitesource datameer-mask falco-monitor threat-model all
 
 install:
 	@echo "Tidying Go modules..."
@@ -97,7 +97,7 @@ codeql:
 		--output=$(CODEQL_RESULTS)
 	@echo "CodeQL analysis completed. Results saved to $(CODEQL_RESULTS)"
 
-synk:
+snyk:
 	@echo "Installing latest Snyk CLI..."
 	curl -sL https://static.snyk.io/cli/latest/snyk-linux -o snyk
 	chmod +x snyk
@@ -186,8 +186,18 @@ falco-monitor:
 	cat falco_alert.json
 	@echo "Falco monitoring simulation complete."
 
+threat-model:
+	@echo "Running OWASP Threat Dragon CLI threat modeling..."
+	# Hardcoded dummy values for test mode
+	@THREAT_MODEL_FILE="threatmodel_test.json" ; \
+	echo '{ "summary": "Sample Threat Model", "threats": [ \
+	{ "id": 1, "title": "SQL Injection", "severity": "High" }, \
+	{ "id": 2, "title": "Privilege Escalation", "severity": "Medium" } ] }' > $$THREAT_MODEL_FILE ; \
+	cat $$THREAT_MODEL_FILE ; \
+	echo "Threat modeling simulation complete. Output: $$THREAT_MODEL_FILE"
+
 test:
 	@echo "Running Go tests..."
 	go test ./... -v
 
-all: install lint gitleaks semgrep terrascan codeql synk conftest owasp metasploit whitesource datameer-mask falco-monitor test
+all: install lint gitleaks semgrep terrascan codeql snyk conftest owasp metasploit whitesource datameer-mask falco-monitor threat-model test

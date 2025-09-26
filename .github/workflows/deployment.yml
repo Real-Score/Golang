@@ -60,13 +60,13 @@ jobs:
           go-version: "1.22"
       - run: make codeql
 
-  synk:
+  snyk:
     runs-on: ubuntu-latest
     needs: install
     steps:
       - uses: actions/checkout@v4
       - name: Run Snyk scan
-        run: make synk
+        run: make snyk
 
   # metasploit:
   #   runs-on: ubuntu-latest
